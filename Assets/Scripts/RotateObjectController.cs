@@ -5,16 +5,16 @@ public class RotateObjectController : MonoBehaviour
     public float PCRotationSpeed = 10f;
     public float MobileRotationSpeed = 0.4f;
     //Drag the camera object here
-    public Camera cam;  
+    public Camera cam;
 
-    void OnMouseDrag()
+    private void OnMouseDrag()
     {
         float XaxisRotation = Input.GetAxis("Mouse X")*PCRotationSpeed;
-        float YaxisRotation = Input.GetAxis("Mouse Y")*PCRotationSpeed;
+        // float YaxisRotation = Input.GetAxis("Mouse Y")*PCRotationSpeed;
 
         // select the axis by which you want to rotate the GameObject
         transform.Rotate (Vector3.down, XaxisRotation);
-        transform.Rotate (Vector3.right, YaxisRotation);
+        // transform.Rotate (Vector3.right, YaxisRotation);
     }
 
     void Update ()
