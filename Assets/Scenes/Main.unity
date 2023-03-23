@@ -178,7 +178,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: sedan-car-01
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 6881395352733682627, guid: 5e1f1e4eda7b3f84a95afae22bd7c87e, type: 3}
+      propertyPath: cam
+      value: 
+      objectReference: {fileID: 963194227}
+    - target: {fileID: 7186384080094227086, guid: 5e1f1e4eda7b3f84a95afae22bd7c87e, type: 3}
+      propertyPath: cam
+      value: 
+      objectReference: {fileID: 963194227}
+    m_RemovedComponents:
+    - {fileID: 6720642088434925095, guid: 5e1f1e4eda7b3f84a95afae22bd7c87e, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 5e1f1e4eda7b3f84a95afae22bd7c87e, type: 3}
 --- !u!4 &80699750 stripped
 Transform:
