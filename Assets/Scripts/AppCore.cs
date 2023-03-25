@@ -13,12 +13,12 @@ namespace DefaultNamespace
 {
 	public class AppCore : MonoBehaviour
 	{
-		private readonly Color highlightColour = Color.green;
-
+		public ColorPicker colourPicker;
 		public Transform characterTransform;
 		public List<Transform> customisableArmour;
 
-		[SerializeField] private InputAction pressAction, screenPosAction, axisAction;
+		[SerializeField] private InputActionReference _pressAction, _holdAction, _screenPosAction, _axisAction;
+
 		[SerializeField] private float speed = 1;
 		[SerializeField] private bool inverted;
 
@@ -26,10 +26,11 @@ namespace DefaultNamespace
 		private Vector2 _rotation;
 		private Vector3 _curScreenPos;
 		private bool _isDragging;
-		private bool _isArmourClickedOn => IsArmourClicked();
-		
-		private Material _activeMaterial;
-		private Color _prevMaterialColour;
+		private bool _isArmourHit => IsArmourHit();
+
+		private Transform _armourHit;
+		private Material _selectedMaterial;
+		private Material _highlightedMaterial;
 
 		private void Awake()
 		{
@@ -39,33 +40,52 @@ namespace DefaultNamespace
 
 		private void InitializeInputActions()
 		{
-			screenPosAction.Enable();
-			pressAction.Enable();
-			axisAction.Enable();
-			screenPosAction.performed += context =>
+			_pressAction.action.Enable();
+			_screenPosAction.action.Enable();
+			_axisAction.action.Enable();
+			_holdAction.action.Enable();
+
+			_screenPosAction.action.performed += context =>
 			{
 				_curScreenPos = context.ReadValue<Vector2>();
 				HighlightCustomisableArmour();
 			};
-			axisAction.performed += context =>
+			_axisAction.action.performed += context =>
 			{
 				_rotation = context.ReadValue<Vector2>();
 			};
-			pressAction.performed += context =>
+
+			_pressAction.action.performed += context =>
 			{
-				if (_isArmourClickedOn)
+				if (!_isArmourHit)
+					return;
+				
+				var meshRenderer = _armourHit.transform.GetComponent<SkinnedMeshRenderer>();
+				if (meshRenderer == null || meshRenderer.material == null)
+					return;
+				
+				_selectedMaterial = meshRenderer.material;
+				OpenColourPicker();
+			};
+			
+			_holdAction.action.performed += context =>
+			{
+				if (_isArmourHit)
 					StartCoroutine(RotateCharacter());
 			};
-			pressAction.canceled += context =>
+			_holdAction.action.canceled += context =>
 			{
 				_isDragging = false;
 			};
 		}
 
-		private bool IsArmourClicked()
+		private bool IsArmourHit()
 		{
 			var ray = _mainCam.ScreenPointToRay(_curScreenPos);
-			return Physics.Raycast(ray, out var hit) && customisableArmour.Contains(hit.transform);
+			var isArmourHit = Physics.Raycast(ray, out var hit) && customisableArmour.Contains(hit.transform);
+			if (isArmourHit)
+				_armourHit = hit.transform;
+			return isArmourHit;
 		}
 		
 		private IEnumerator RotateCharacter()
@@ -82,34 +102,64 @@ namespace DefaultNamespace
 
 		private void HighlightCustomisableArmour()
 		{
-			var ray = _mainCam.ScreenPointToRay(_curScreenPos);
-			if (Physics.Raycast(ray, out var hit))
+			if (_isArmourHit)
 			{
-				if (!customisableArmour.Contains(hit.transform))
-					return;
-				
-				var meshRenderer = hit.transform.GetComponent<SkinnedMeshRenderer>();
-				if (meshRenderer == null || meshRenderer.material == null)
-					return;
-				
-				var selectedMaterial = meshRenderer.material;
-				if (_activeMaterial == selectedMaterial)
-					return;
-				
-				if (_prevMaterialColour != default)
-					_activeMaterial.color = _prevMaterialColour;
-				
-				_activeMaterial = selectedMaterial;
-				_prevMaterialColour = _activeMaterial.color;
-				_activeMaterial.color = highlightColour;
-				
-				// Debug.Log($"{hit.transform.name.Split("_").Last()}");
+				for (int i = 0; i < customisableArmour.Count; i++)
+				{
+					var armourTransform = customisableArmour[i];
+					var meshRenderer = armourTransform.GetComponent<SkinnedMeshRenderer>();
+					if (meshRenderer == null || meshRenderer.material == null)
+						continue;
+					SetMaterialHighlighted(armourTransform == _armourHit, meshRenderer.material);
+				}
 			}
 			else
 			{
-				if (_activeMaterial != null && _prevMaterialColour != default)
-					_activeMaterial.color = _prevMaterialColour;
+				for (int i = 0; i < customisableArmour.Count; i++)
+				{
+					var armourTransform = customisableArmour[i];
+					var meshRenderer = armourTransform.GetComponent<SkinnedMeshRenderer>();
+					if (meshRenderer == null || meshRenderer.material == null)
+						continue;
+					SetMaterialHighlighted(false, meshRenderer.material);
+				}
 			}
+		}
+
+		private static void SetMaterialHighlighted(bool highlight, Material material)
+		{
+			const float intensity = 0.15f;
+			if (highlight)
+			{
+				material.EnableKeyword("_EMISSION");
+				//before we can set the color
+				material.SetColor("_EmissionColor", Color.white * intensity);
+			}
+			else
+			{
+				material.DisableKeyword("_EMISSION");
+			}
+		}
+
+
+		private void OpenColourPicker()
+		{
+			var armourName = _armourHit.gameObject.name.Split("_").Last().ToUpper();
+			var message = $"Choose color: {armourName}";
+			if (colourPicker.gameObject.activeInHierarchy)
+			{
+				colourPicker.headerMessage.text = message;
+				return;
+			}
+			ColorPicker.Create(_selectedMaterial.color, message, SetColor, ColorFinished, true);
+		}
+		private void SetColor(Color currentColor)
+		{
+			_selectedMaterial.color = currentColor;
+		}
+		private static void ColorFinished(Color finishedColor)
+		{
+			// Debug.Log("You chose the color " + ColorUtility.ToHtmlStringRGBA(finishedColor));
 		}
 	}
 }
