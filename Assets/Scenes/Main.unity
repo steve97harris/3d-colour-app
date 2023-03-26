@@ -556,6 +556,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1036862976}
   - component: {fileID: 1036862977}
+  - component: {fileID: 1036862979}
+  - component: {fileID: 1036862978}
+  - component: {fileID: 1036862980}
   m_Layer: 0
   m_Name: AppCore
   m_TagString: Untagged
@@ -590,7 +593,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b65bbb75af3c427493351c00bcc1e59b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainCam: {fileID: 963194227}
   colourPicker: {fileID: 1026002012}
+  colourPickerController: {fileID: 1036862980}
+  inputController: {fileID: 1036862979}
+  characterController: {fileID: 1036862978}
+--- !u!114 &1036862978
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1036862975}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71b885eb0f234d6bb5c8d34219d00588, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   characterTransform: {fileID: 2015866020590503381}
   customisableArmour:
   - {fileID: 2015866020590503388}
@@ -599,13 +618,39 @@ MonoBehaviour:
   - {fileID: 2015866020590503385}
   - {fileID: 2015866020590503384}
   - {fileID: 2015866020590503383}
-  - {fileID: 2015866020590503382}
+  rotation: {x: 0, y: 0}
+  isDragging: 0
+  speed: 1
+  inverted: 0
+--- !u!114 &1036862979
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1036862975}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3446708d8e0744c7aa1618ada39bad50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   _pressAction: {fileID: 3086531581930935965, guid: 73be6f8e66171684eae46340d5b88639, type: 3}
   _holdAction: {fileID: -8406108512292437563, guid: 73be6f8e66171684eae46340d5b88639, type: 3}
   _screenPosAction: {fileID: -765012091076143692, guid: 73be6f8e66171684eae46340d5b88639, type: 3}
   _axisAction: {fileID: -2998035428842196634, guid: 73be6f8e66171684eae46340d5b88639, type: 3}
-  speed: 1
-  inverted: 0
+  ArmourClicked: {fileID: 0}
+--- !u!114 &1036862980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1036862975}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: febbfee695a94842a577d9fb123df545, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2079205498
 GameObject:
   m_ObjectHideFlags: 0
@@ -682,7 +727,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
@@ -775,11 +820,6 @@ PrefabInstance:
 --- !u!4 &2015866020590503381 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5763668719013863935, guid: cf8d804551a0e924fbc8ed632e78970c, type: 3}
-  m_PrefabInstance: {fileID: 2015866020590503380}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &2015866020590503382 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4584115567891038994, guid: cf8d804551a0e924fbc8ed632e78970c, type: 3}
   m_PrefabInstance: {fileID: 2015866020590503380}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &2015866020590503383 stripped
